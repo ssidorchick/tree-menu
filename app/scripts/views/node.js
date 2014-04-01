@@ -30,7 +30,7 @@ var task = task || {};
     },
 
     dblclickHandler: function(e) {
-      if (this.model.get('name')) {
+      if (this.model.get('name') && !this.model.get('nodes')) {
         this.model.set('nodes', new task.Nodes());
       }
     },
