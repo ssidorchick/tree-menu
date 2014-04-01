@@ -7,6 +7,7 @@ var task = task || {};
     initialize: function(options) {
       this.collection = options.collection;
       this.level = options.level || 0;
+      this.nodeViews = [];
 
       this.listenTo(this.collection, 'add', this.renderNode);
     },
@@ -33,6 +34,7 @@ var task = task || {};
 
     renderNode: function(node) {
       var nodeView = new task.NodeView({ model: node, level: this.level });
+      this.nodeViews.push(nodeView);
       this.$el.append(nodeView.render().el);
     },
 
@@ -45,9 +47,9 @@ var task = task || {};
     },
 
     renderSubNodesNew: function(node) {
-      var nodesView = new task.NodesView({ collection: node.get('nodes') });
+      var nodesView = new task.NodesView({ collection: node.get('nodes'), level: this.level + 1 });
       var index = this.collection.indexOf(node);
-      console.log(index);
+      this.nodeViews[index].$el.after(nodesView.render().el);
     },
 
     nodeAdded: function(node) {
