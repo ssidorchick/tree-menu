@@ -14,6 +14,9 @@ var task = task || {};
 
     initialize: function(options) {
       this.level = options.level;
+      this.NodesView = options.NodesView;
+
+      this.listenTo(this.model, 'change:nodes', this.renderNodesView);
     },
 
     render: function() {
@@ -26,7 +29,20 @@ var task = task || {};
       var template = this.model.get('name') ? this.template : this.emptyTemplate;
       this.$el.html(template(data));
 
+      this.renderNodesView(this.model);
+
       return this;
+    },
+
+    renderNodesView: function(node) {
+      var subnodes = node.get('nodes');
+      if (subnodes) {
+        var nodesView = new this.NodesView({
+          collection: subnodes,
+          level: this.level + 1
+        });
+        this.$el.append(nodesView.render().el);
+      }
     },
 
     dblclickHandler: function(e) {
