@@ -59,6 +59,7 @@ var task = task || {};
 
         node.set('isEmpty', false);
         this.collection.add(node);
+        this.listenTo(node, 'change:nodes', this.renderSubNodesNew);
 
         this.renderEmptyNode(this.level);
       }
