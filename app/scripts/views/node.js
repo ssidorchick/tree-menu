@@ -23,23 +23,24 @@ var task = task || {};
         data.level = '-' + data.level;
       }
 
-      if (this.model.get('isEmpty')) {
-        this.$el.html(this.emptyTemplate(data));
-      } else {
-        this.$el.html(this.template(data));
-      }
+      var template = this.model.get('name') ? this.template : this.emptyTemplate;
+      this.$el.html(template(data));
+
       return this;
     },
 
     dblclickHandler: function(e) {
-      if (!this.model.get('isEmpty')) {
+      if (this.model.get('name')) {
         this.model.set('nodes', new task.Nodes());
       }
     },
 
     keyupEmptyNode: function(e) {
       if (e.keyCode === 13) {
-        this.model.set('name', this.$el.find('.empty-node').val());
+        var name = this.$el.find('.empty-node').val();
+        if (name) {
+          this.model.set('name', name);
+        }
       }
     }
   });

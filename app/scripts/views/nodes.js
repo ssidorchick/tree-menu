@@ -14,7 +14,7 @@ var task = task || {};
 
     render: function() {
       this.collection.each(function(node) {
-        this.listenTo(node, 'change:nodes', this.renderSubNodesNew);
+        this.listenTo(node, 'change:nodes', this.addSubnodes);
         this.renderNode(node);
 
         var nodes = node.get('nodes');
@@ -39,30 +39,30 @@ var task = task || {};
     },
 
     renderEmptyNode: function() {
-      var node = new task.Node({ isEmpty: true });
+      var node = new task.Node();
       this.emptyNodeView = new task.NodeView({ model: node, level: this.level });
       this.$el.append(this.emptyNodeView.render().el);
 
-      this.listenTo(node, 'change:name', this.nodeAdded);
+      this.listenTo(node, 'change:name', this.addNode);
     },
 
-    renderSubNodesNew: function(node) {
-      var nodesView = new task.NodesView({ collection: node.get('nodes'), level: this.level + 1 });
+    addSubnodes: function(node) {
+      var nodesView = new task.NodesView({
+        collection: node.get('nodes'),
+        level: this.level + 1
+      });
       var index = this.collection.indexOf(node);
       this.nodeViews[index].$el.after(nodesView.render().el);
     },
 
-    nodeAdded: function(node) {
-      if (!_.isEmpty(node.get('name'))) {
-        this.stopListening(node);
-        this.emptyNodeView.$el.detach();
+    addNode: function(node) {
+      this.stopListening(node);
+      this.emptyNodeView.$el.detach();
 
-        node.set('isEmpty', false);
-        this.collection.add(node);
-        this.listenTo(node, 'change:nodes', this.renderSubNodesNew);
+      this.collection.add(node);
+      this.listenTo(node, 'change:nodes', this.addSubnodes);
 
-        this.renderEmptyNode(this.level);
-      }
+      this.renderEmptyNode(this.level);
     }
   });
 })();
